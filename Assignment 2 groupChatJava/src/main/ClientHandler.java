@@ -21,6 +21,10 @@ public class ClientHandler implements Runnable {
 	public ClientHandler(Socket socket) {
 		try {
 			this.socket = socket;
+			// OutputStreamWriter creates an OutputStreamWriter that uses the default character encoding. (character stream type conversion)
+			// Returns an output stream for the socket (byte stream output)
+			// Type casting to character stream as messages are the output from sockets	
+			// BufferedWriter makes communication more efficient
 			this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));	// What server will send
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));	// What client will send
 			this.clientUsername = this.bufferedReader.readLine(); // reading a line till the new line character
@@ -32,7 +36,11 @@ public class ClientHandler implements Runnable {
 	}
 	
 
-	/* run() is run on each separate thread
+	/* run() is run on a separate thread
+	 *
+	 * When an object implementing interface Runnable is used to create a thread, starting the thread causes the object's run method 
+	 * to be called in that separately executing thread.
+	 * The general contract of the method run is that it may take any action whatsoever.
 	 */
 	@Override
 	public void run() {
@@ -40,9 +48,10 @@ public class ClientHandler implements Runnable {
 		
 		while (socket.isConnected()) {
 			try {
-				// Server will be listening to messages from the client here
+				// We will be listening to messages from here, and it is a blocking code
+				// Hence now we will a thread waiting for the messages, and rest working with the application as we want to send messages as well
 				messageFromClient = this.bufferedReader.readLine();
-				this.broadcastMessage("[" + this.clientUsername + "]: " + messageFromClient);
+				this.broadcastMessage(messageFromClient);
 			} catch (IOException e) {
 				this.closeEverything(this.socket, this.bufferedReader, this.bufferedWriter);
 				break;

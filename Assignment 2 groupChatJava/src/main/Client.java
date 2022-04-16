@@ -18,8 +18,13 @@ public class Client {
 	public Client(Socket socket, String username) {
 		try {
 			this.socket = socket;
+			// OutputStreamWriter creates an OutputStreamWriter that uses the default character encoding. (character stream type conversion)
+			// Returns an output stream for the socket (byte stream output)
+			// Type casting to character stream as messages are the output from sockets	
+			// BufferedWriter makes communication more efficient
 			this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));	// What server will send
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));	// What client will send
+			// this.username = this.bufferedReader.readLine(); // reading a line till the new line character
 			this.username = username;
 		} catch (IOException e) {
 			this.closeEverything(this.socket, this.bufferedReader, this.bufferedWriter);
@@ -36,7 +41,7 @@ public class Client {
 			Scanner in = new Scanner(System.in);
 			while (socket.isConnected()) {
 				String messageToSend = in.nextLine();
-				this.bufferedWriter.write(this.username + ": " + messageToSend);
+				this.bufferedWriter.write("[" + this.username + "]" + ": " + messageToSend);
 				this.bufferedWriter.newLine();
 				this.bufferedWriter.flush();
 			}
@@ -45,9 +50,15 @@ public class Client {
 		}
 	}
 	
-	// A blocking operation
-	// Listen for messages from the group
+	/**
+	 * A blocking operation
+	 * Listen for messages from the group
+	 */
 	public void listenForMessage() {
+		/*
+		 * Here it's not the Runnable interface which is being instantiated, a new anonymous class is created which implements Runnable and that is then instantiated.
+		 * You can read more about anonymous classes here:http://docs.oracle.com/javase/tutorial/java/javaOO/anonymousclasses.html
+		 */
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -83,6 +94,13 @@ public class Client {
 		}
 	}
 	
+	public boolean sample() {
+		return true;
+	}
+	
+	/**
+	 * @param args takes string inputs from the terminal
+	 */
 	public static void main (String args[]) {
 		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
